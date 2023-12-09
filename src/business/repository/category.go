@@ -40,7 +40,7 @@ func (repository *categories) Create(category entities.CategoryEntity) (uint64, 
 }
 
 func (repository *categories) FindById(findByDto dtos.FindCategoryByDto) (entities.CategoryEntity, error) {
-	lines, repositoryError := repository.db.Query("SELECT * FROM categories WHERE id = ?", findByDto.ID)
+	lines, repositoryError := repository.db.Query("SELECT * FROM categories WHERE uuid = ?", findByDto.UUID)
 	if repositoryError != nil {
 		return entities.CategoryEntity{}, repositoryError
 	}
@@ -60,8 +60,8 @@ func (repository *categories) FindById(findByDto dtos.FindCategoryByDto) (entiti
 func (repository *categories) FindAll(findAllDto dtos.FindAllCategoriesDto) ([]entities.CategoryEntity, error) {
 	nameLikeClause := fmt.Sprintf("%%%s%%", findAllDto.Name)
 
-	lines, repositoryError := repository.db.Query("SELECT * FROM categories WHERE name LIKE ?", nameLikeClause)
-	if repository != nil {
+	lines, repositoryError := repository.db.Query(`SELECT * FROM categories WHERE name LIKE ?`, nameLikeClause)
+	if repositoryError != nil {
 		return nil, repositoryError
 	}
 	defer lines.Close()
@@ -82,13 +82,13 @@ func (repository *categories) FindAll(findAllDto dtos.FindAllCategoriesDto) ([]e
 }
 
 func (repository *categories) Delete(deleteDto dtos.DeleteCategoryDto) error {
-	statement, repositoryError := repository.db.Prepare("DELETE FROM categories WHERE uuid = ?")
+	statement, repositoryError := repository.db.Prepare("DELETE FROM categories WHERE id = ?")
 	if repositoryError != nil {
 		return repositoryError
 	}
 	defer statement.Close()
 
-	_, repositoryError = statement.Exec(deleteDto.UUID)
+	_, repositoryError = statement.Exec(deleteDto.ID)
 	if repositoryError != nil {
 		return repositoryError
 	}
@@ -107,6 +107,8 @@ func (repository *categories) Update(updateDto dtos.UpdateCategoryDto) error {
 	}
 
 	updateFieldsJoined := strings.Join(updateFields, ",")
+
+	fmt.Println(updateFieldsJoined)
 
 	sqlClause := fmt.Sprintf("UPDATE categories SET %s WHERE id = ?", updateFieldsJoined)
 

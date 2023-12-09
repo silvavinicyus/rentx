@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"rentx/src/framework/router"
 	"rentx/src/utils/config"
 )
 
@@ -12,5 +13,7 @@ func main() {
 
 	fmt.Printf("Listening at port %d!\n", config.Port)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil))
+	r := router.Generate()
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
 }

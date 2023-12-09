@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"fmt"
 	"rentx/src/business/repository"
 	"rentx/src/domain/dtos"
 	"rentx/src/domain/entities"
@@ -10,6 +11,7 @@ import (
 )
 
 func CreateCategoryUseCase(props dtos.CreateCategoryDto) (entities.CategoryEntity, error) {
+	fmt.Println("Cheguei no use case!!!!!")
 	db, erro := database.Connect()
 
 	if erro != nil {
